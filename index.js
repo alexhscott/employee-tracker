@@ -2,7 +2,7 @@ const inquirer = require("inquirer");
 const mySQL = require("mysql2");
 const db = require("./db");
 
-require('console.table');
+require("console.table");
 
 const mainMenu = async () => {
     const answer = await inquirer.prompt([
