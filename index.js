@@ -18,7 +18,6 @@ const mainMenu = async () => {
           { name: "Add a role", value: addNewRole },
           { name: "Add an employee", value: addNewEmployee },
           { name: "Update an employee role", value: updateEmployeeRole },
-          { name: "Exit", value: exit },
         ],
       },
     ]);
