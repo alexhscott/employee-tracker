@@ -1,49 +1,64 @@
 const inquirer = require("inquirer");
 const mySQL = require("mysql2");
-const db = require("./db");
+const db = require("./db/connection");
 
-require("console.table");
 
 const mainMenu = async () => {
+    console.log("working");
     const answer = await inquirer.prompt([
       {
         type: "list",
         name: "menu",
         message: "What would you like to do?",
-        choices: [
-          { name: "View all departments", value: viewAllDepartments },
-          { name: "View all roles", value: viewAllRoles },
-          { name: "View all employees", value: viewAllEmployees },
-          { name: "Add a department", value: addNewDepartment },
-          { name: "Add a role", value: addNewRole },
-          { name: "Add an employee", value: addNewEmployee },
-          { name: "Update an employee role", value: updateEmployeeRole },
-        ],
+        choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update an employee role"]
       },
+
     ]);
-  
-    answer.menu();
+    // add all choices to case/break;
+   switch(answer.menu) {
+        case "View all departments":
+            console.log(answer);
+            viewAllDepartments();
+        break;
+        case "View all roles":
+            viewAllRoles();
+        break;
+        case "Add a department":
+            addNewDepartment();
+        break;
+    };
+   
+    // return answer;
 };
 
 function viewAllDepartments() {
-    db.findAllDepartments().then(([rows]) => {
-        console.log(rows);
-        return mainMenu();
+    db.query(`SELECT * FROM department;`,(err,res) => {
+        if (err) {
+            console.log(err);
+        } 
+        console.table(res);
     });
+    mainMenu();
 };
 
 function viewAllRoles() {
-    db.findAllRoles().then(([rows]) => {
-        console.log(rows);
-        return mainMenu();
+    db.query(`SELECT * FROM role;`,(err,res) => {
+        if (err) {
+            console.log(err);
+        } 
+        console.table(res);
     });
+    mainMenu();
 };
 
 function viewAllEmployees() {
-    db.findAllEmployees().then(([rows]) => {
-        console.log(rows);
-        return mainMenu();
+    db.query(`SELECT * FROM employee;`,(err,res) => {
+        if (err) {
+            console.log(err);
+        } 
+        console.table(res);
     });
+    mainMenu();
 };
 
 function input(value) {
@@ -66,17 +81,18 @@ const addNewDepartment = async () => {
     ]);
 
     const departmentName = answer.name;
-    db.addADepartment(departmentName).then(() => {
-        db.findAllDepartments().then(([rows]) => {
-            console.table(rows);
-            return mainMenu();
+    db.query(`INSERT INTO department (name) VALUES ("${departmentName}");`, (err,res) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log(res);
         });
-    });
+    mainMenu();
 };
 
 const addNewRole = async () => {
-    const [rows] = await db.findAllDepartments();
-    console.table(rows);
+    // const [rows] = await db.findAllDepartments();
+    // console.table(rows);
 
     const selectDepartment = rows.map(({ name, id }) => ({ name, value: id }));
 
@@ -101,12 +117,19 @@ const addNewRole = async () => {
         },
     ]);
 
-    db.addARole(answer.name, answer.salary, answer.department).then(() => {
-        db.findAllRoles().then(([rows]) => {
-            console.table(rows);
-            return mainMenu();
-        });
+    db.query(`INSERT INTO role (title, salary, department_id) VALUES ("${selectDepartment}");`, (err,res) => {
+        if (err) {
+            console.log(err);
+        }
+        console.log(res);
     });
+mainMenu();
+    // db.addARole(answer.name, answer.salary, answer.department).then(() => {
+    //     db.findAllRoles().then(([rows]) => {
+    //         console.table(rows);
+    //         return mainMenu();
+    //     });
+    // });
 };
 
 const addNewEmployee = async () => {
@@ -201,11 +224,14 @@ const updateEmployeeRole = async () => {
     console.log(answer);
 
     db.updateEmployeeRole(answer.role, answer.employee).then(() => {
+        db.query(``)
+        
         db.findAllEmployees().then(([rows]) => {
             console.table(rows);
             return mainMenu();
         });
     });
 };
+
 
 mainMenu();
