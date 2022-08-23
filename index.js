@@ -26,6 +26,15 @@ const mainMenu = async () => {
         case "Add a department":
             addNewDepartment();
         break;
+        case "Add a role":
+            addNewRole();
+        break;
+        case "Add an employee":
+            addNewEmployee();
+        break;
+        case "Update an employee role":
+            updateEmployeeRole();
+        break;
     };
    
     // return answer;
@@ -91,10 +100,8 @@ const addNewDepartment = async () => {
 };
 
 const addNewRole = async () => {
-    // const [rows] = await db.findAllDepartments();
-    // console.table(rows);
 
-    const selectDepartment = rows.map(({ name, id }) => ({ name, value: id }));
+    const selectDepartment = bd(({ name, id }) => ({ name, value: id }));
 
     const answer = await inquirer.prompt([
         {
